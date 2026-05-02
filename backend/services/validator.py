@@ -22,7 +22,12 @@ class QueryValidator:
     def is_safe(cls, query: str) -> tuple[bool, str]:
         """
         Validates if the query is safe from prompt injection and relevant to elections.
-        Returns a tuple of (is_valid, error_message)
+
+        Args:
+            query (str): The user input text to validate.
+
+        Returns:
+            tuple[bool, str]: A tuple containing a boolean (True if safe) and a string message.
         """
         query_lower = query.lower()
 

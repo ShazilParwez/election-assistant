@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
-from app.main import app
-from app.core.config import settings
+from main import app
+from core.config import settings
 
 client = TestClient(app)
 
@@ -9,7 +9,11 @@ def test_root():
     assert response.status_code == 200
     assert "Welcome" in response.json()["message"]
 
-def test_ask_valid_query():
+from unittest.mock import patch
+
+@patch('routes.get_response')
+def test_ask_valid_query(mock_get_response):
+    mock_get_response.return_value = "1. 📌 Overview\n\n2. 🪜 Step-by-Step Process"
     payload = {"query": "How do I register to vote?"}
     response = client.post(f"{settings.API_V1_STR}/ask", json=payload)
     

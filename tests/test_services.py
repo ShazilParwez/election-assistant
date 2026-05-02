@@ -1,6 +1,7 @@
 import pytest
-from app.services.validator import QueryValidator
-from app.services.llm_service import LLMService
+from services.validator import QueryValidator
+from services.gemini_service import get_response
+from unittest.mock import patch, MagicMock
 
 def test_validator_safe_and_relevant():
     is_safe, msg = QueryValidator.is_safe("When is the next presidential election?")
@@ -17,8 +18,15 @@ def test_validator_prompt_injection():
     assert is_safe is False
     assert msg == "Query blocked for security reasons."
 
-@pytest.mark.asyncio
-async def test_llm_service_format():
-    response = await LLMService.generate_response("Tell me about voting")
-    assert "1. 📌 Overview" in response
-    assert "2. 🪜 Step-by-Step Process" in response
+@patch('services.gemini_service.get_gemini_client')
+def test_llm_service_format(mock_get_client):
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.text = "1. 📌 Overview\n\n2. 🪜 Step-by-Step Process"
+    mock_client.models.generate_content.return_value = mock_response
+    mock_get_client.return_value = mock_client
+    
+    with patch('services.gemini_service.save_query'):
+        response = get_response("Tell me about voting")
+        assert "1. 📌 Overview" in response
+        assert "2. 🪜 Step-by-Step Process" in response
