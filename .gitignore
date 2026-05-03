@@ -47,4 +47,4 @@ dist/
 .cache/
 
 # 🔒 Google Cloud Credentials (IMPORTANT)
-*.key.json
+firebase_key.json
